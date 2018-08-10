@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Viacom18</string>
+    <string name="url">Enter sample URL </string>
+    <string name="list_item">Enter List Count </string>
+    <string name="submit">Submit </string>
+</resources>
