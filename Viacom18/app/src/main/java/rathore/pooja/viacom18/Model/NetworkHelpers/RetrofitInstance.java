@@ -4,13 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import okhttp3.OkHttpClient;
-import rathore.pooja.viacom18.utils.HostSelectionInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitInstance {
-
-    public static HostSelectionInterceptor hostSelectionInterceptor = new HostSelectionInterceptor();
 
     public static Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")

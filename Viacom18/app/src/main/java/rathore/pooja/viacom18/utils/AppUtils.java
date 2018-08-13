@@ -1,7 +1,11 @@
 package rathore.pooja.viacom18.utils;
 
+import android.app.Activity;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+
 public class AppUtils {
-    public static String[] FILTER_ARRAY = {"of", "the", "The", "a", "an", "with", "he", "she", "it", "they", "them", "in", "also", "because", "us", "and", "all"};
+    public static String[] FILTER_ARRAY = {"to","in","at","of", "the", "The", "a", "an", "with", "he", "she", "it", "they", "them", "in", "also", "because", "us", "and", "all"};
     public static String BASE_URL = "https://";
 
     public static String[] getUniqueKeys(String[] keys) {
@@ -22,5 +26,14 @@ public class AppUtils {
             keyAlreadyExists = false;
         }
         return uniqueKeys;
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

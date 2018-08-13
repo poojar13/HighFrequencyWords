@@ -1,6 +1,7 @@
 package rathore.pooja.viacom18.Presenter;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import java.util.Collections;
 import okhttp3.ResponseBody;
 import rathore.pooja.viacom18.Model.NetworkHelpers.RetrofitInstance;
 import rathore.pooja.viacom18.Model.Pojo.ListData;
+import rathore.pooja.viacom18.R;
 import rathore.pooja.viacom18.View.Interface.ResponseInterface;
 import rathore.pooja.viacom18.View.Interface.RetrofitInterface;
 import rathore.pooja.viacom18.utils.AppUtils;
@@ -23,8 +25,10 @@ import retrofit2.Response;
 
 
 public class MainActivityPresenter {
+    ProgressDialog progressDoalog;
 
-    public void getWords(String url, final ResponseInterface responseInterface) {
+    public void getWords(String url, final ResponseInterface responseInterface,Activity activity) {
+        progressDoalog = new ProgressDialog(activity);
         String baseUrl ;
         if(url.contains("https://")||url.contains("http://")){
             baseUrl = url;
@@ -34,13 +38,17 @@ public class MainActivityPresenter {
         }
         RetrofitInterface apiService = RetrofitInstance.getClient(baseUrl).create(RetrofitInterface.class);
         Call<ResponseBody> call = apiService.getWords();
+        progressDoalog.setMax(100);
+        progressDoalog.setMessage("Fetching High Frequency Words....");
+        progressDoalog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDoalog.show();
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                call.request().url();
-                if (response.isSuccessful()) {
 
+                if (response.isSuccessful()) {
+                    progressDoalog.dismiss();
                     String html = null;
                     Document document = null;
                     try {
@@ -56,6 +64,7 @@ public class MainActivityPresenter {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                progressDoalog.dismiss();
                 Log.d("failure", t.getMessage());
                 responseInterface.onFailure("Something went wrong!");
             }
@@ -69,7 +78,7 @@ public class MainActivityPresenter {
     public ArrayList<ListData> list(Document document, boolean filter) {
         ArrayList<ListData> listDataArrayList = new ArrayList<>();
         String documentText = document.text();
-        String resltText = documentText.replaceAll("[-+.^:,]", "");
+        String resltText = documentText.replaceAll("[-+.^:,|]", "");
         String[] keys = resltText.split("\\s+");
         String[] uniqueKeys;
         int count = 0;

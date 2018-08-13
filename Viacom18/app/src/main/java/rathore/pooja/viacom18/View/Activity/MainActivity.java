@@ -23,6 +23,8 @@ import rathore.pooja.viacom18.Model.Pojo.ListData;
 import rathore.pooja.viacom18.Presenter.MainActivityPresenter;
 import rathore.pooja.viacom18.R;
 import rathore.pooja.viacom18.View.Interface.ResponseInterface;
+import rathore.pooja.viacom18.utils.AppUtils;
+import rathore.pooja.viacom18.utils.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ResponseInterface {
     private static EditText inputUrl, inputListCount;
@@ -81,20 +83,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.submitButton:
-                Log.d("insideClick", String.valueOf(v.getId()));
-                try {
+                if(NetworkUtils.isNetworkAvailable(this)){
+                    AppUtils.hideKeyboard(this);
                     getWords();
-                } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
                 }
+                else {
+                    Toast.makeText(this,"Check Network Connectivity..",Toast.LENGTH_LONG).show();
+                }
+
                 break;
         }
 
     }
 
-    private void getWords() throws NoSuchFieldException, IllegalAccessException {
+    private void getWords() {
 
         listSize = inputListCount.getText().toString();
 
@@ -107,8 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (url.isEmpty()) {
             Toast.makeText(this, "Enter Url", Toast.LENGTH_LONG).show();
         } else {
-            Log.d("insideUrl", url);
-            mainActivityPresenter.getWords(url, MainActivity.this);
+            mainActivityPresenter.getWords(url, this,this);
         }
 
     }
@@ -129,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showList(ArrayList<ListData> listData) {
-        Log.d("ListSize", String.valueOf(listData.size()));
         recyclerViewAdapter.setData(listData, listCount);
         recyclerView.setAdapter(recyclerViewAdapter);
     }
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alertDialog.setPositiveButton("Apply", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 Toast.makeText(getApplicationContext(), "Filter Applied", Toast.LENGTH_SHORT).show();
-                mainActivityPresenter.getWords(url, MainActivity.this);
+                mainActivityPresenter.getWords(url, MainActivity.this,MainActivity.this);
                 filter = 1;
             }
         });
@@ -151,14 +151,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Toast.makeText(getApplicationContext(), "Filter Removed", Toast.LENGTH_SHORT).show();
-                mainActivityPresenter.getWords(url, MainActivity.this);
-
+                mainActivityPresenter.getWords(url, MainActivity.this,MainActivity.this);
                 filter = 0;
-//                dialog.cancel();
             }
         });
 
-        // Showing Alert Message
         alertDialog.show();
     }
 }
